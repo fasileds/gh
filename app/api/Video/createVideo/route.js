@@ -34,8 +34,8 @@ async function getAccessTokenUsingRefreshToken(refreshToken) {
   }
 
   const oauth2Client = new google.auth.OAuth2(
-    "297832079808-ia2nesv2gpcoru75u6svudt3bm2dfvif.apps.googleusercontent.com",
-    "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",
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_SECRET_KEY,
     "http://localhost:3000/api/auth/callback/google"
   );
   oauth2Client.setCredentials({ refresh_token: refreshToken });
