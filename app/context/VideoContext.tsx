@@ -96,7 +96,7 @@ export const VideoProvider = ({ children }: VideoProviderProps) => {
     formDataToSend.append("duration", formData.duration);
     formDataToSend.append("price", parseFloat(formData.price).toString());
     formDataToSend.append("description", formData.description);
-    formDataToSend.append("userId", user.id);
+    formDataToSend.append("userId", "06220b98-f8b7-4608-8db7-728afe7dbd1b");
     formDataToSend.append("restorantId", formData.restorantId);
 
     try {

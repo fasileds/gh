@@ -13,11 +13,14 @@ import {
 } from "@/app/ui/skeletons";
 import TheSesionOne from "./theSesionOne";
 import IntroVideo from "@/components/introVideo";
+import { useSession } from "next-auth/react";
 
 export default async function Page() {
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
     null
   );
+  const { data: session } = useSession();
+  console.log("the user from dashboard", session?.user);
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
@@ -78,6 +81,7 @@ export default async function Page() {
             <LatestInvoices onInvoiceSelect={setSelectedInvoiceId} />
           </Suspense>
         </div>
+        <TheSesionOne />
       </div>
     </main>
   );
