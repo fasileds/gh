@@ -3,7 +3,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev  -p 3000",
-    "start": "next start"
+    "start": "cross-env NEXTAUTH_URL=http://localhost:3000 next start"
   },
   "dependencies": {
     "@headlessui/react": "^2.1.10",
@@ -21,6 +21,7 @@
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "clsx": "^2.1.1",
+    "cross-env": "^7.0.3",
     "dayjs": "^1.11.13",
     "express": "^4.21.1",
     "formidable": "^3.5.2",
