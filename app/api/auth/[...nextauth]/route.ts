@@ -20,11 +20,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.APPLE_ID || "",
       clientSecret: process.env.APPLE_SECRET || "",
     }),
-    MicrosoftEntraID({
-      clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID,
-      clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET,
-      tenantId: process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID,
-    }),
   ],
   pages: {
     signIn: "/login",
