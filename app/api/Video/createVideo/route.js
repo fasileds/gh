@@ -25,7 +25,7 @@ async function getRefreshTokenFromDatabase() {
   const token =
     "1//03glJmPG3PlYtCgYIARAAGAMSNwF-L9IrSdHStwowdCLPPx2VENSF54U-J5JfcXEzXkTe2JlDyiMyHmZVcmGwFaNtKTmFXbAPsUs";
 
-  return getAccessTokenUsingRefreshToken(token.refreshToken);
+  return getAccessTokenUsingRefreshToken(token);
 }
 
 async function getAccessTokenUsingRefreshToken(refreshToken) {
