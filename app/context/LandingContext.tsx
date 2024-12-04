@@ -50,7 +50,7 @@ export const LandingProvider = ({ children }: LandingProviderProps) => {
       try {
         setLoading(true);
         const res = await axios.get<{ menuItem: Video[] }>(
-          "http://localhost:3000/api/Video/getAllVideo",
+          "/api/Video/getAllVideo",
           {
             params: {
               userId,
