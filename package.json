@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "prisma generate && next build",
     "dev": "next dev  -p 3000",
     "start": "cross-env NEXTAUTH_URL=http://localhost:3000 next start"
   },
@@ -23,6 +23,7 @@
     "clsx": "^2.1.1",
     "cross-env": "^7.0.3",
     "dayjs": "^1.11.13",
+    "dropbox": "^10.34.0",
     "express": "^4.21.1",
     "formidable": "^3.5.2",
     "framer-motion": "^11.11.9",
@@ -37,7 +38,10 @@
     "next": "15.0.0-canary.141",
     "next-auth": "^5.0.0-beta.22",
     "next-connect": "^1.0.0",
+    "next-transpile-modules": "^10.0.1",
+    "node-fetch": "^3.3.2",
     "open": "^10.1.0",
+    "os": "^0.1.2",
     "postcss": "8.4.38",
     "qrcode.react": "^4.1.0",
     "react": "19.0.0-rc-f38c22b244-20240704",

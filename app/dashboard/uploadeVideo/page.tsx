@@ -11,7 +11,6 @@ import PaymentModal from "@/components/PaymentModal";
 import { useAuth } from "@/app/context/AuthContext";
 
 export default function Page() {
-  const { user, logout } = useAuth();
   const { RangePicker } = DatePicker;
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -58,7 +57,7 @@ export default function Page() {
     setTimeRanges(newTimeRanges);
     setFormData((prevData) => ({ ...prevData, businessHours: newTimeRanges }));
   };
-  console.log("the eimale is here", user);
+
   return (
     <main className="min-h-screen bg-gray-100">
       <Breadcrumbs

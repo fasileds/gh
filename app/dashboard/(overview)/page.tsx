@@ -81,7 +81,6 @@ export default async function Page() {
             <LatestInvoices onInvoiceSelect={setSelectedInvoiceId} />
           </Suspense>
         </div>
-        <TheSesionOne />
       </div>
     </main>
   );

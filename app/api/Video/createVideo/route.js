@@ -4,23 +4,61 @@ import { v4 as uuidv4 } from "uuid";
 import { google } from "googleapis";
 import { PrismaClient } from "@prisma/client";
 import path from "path";
-
+import os from "os";
+import { Dropbox } from "dropbox";
+import { Readable } from "stream";
+import fetch from "node-fetch";
 const prisma = new PrismaClient();
 const API_URL = "https://googleads.googleapis.com/v18/customers";
 const DEVELOPER_TOKEN = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
 const GOOGLE_ADS_ACCOUNT_ID = process.env.GOOGLE_ADS_ACCOUNT_ID;
 
 // Google Auth for service account
-const serviceAccountKeyPath = "sinuous-pact-439806-p5-a7652958c028.json";
+const DROPBOX_ACCESS_TOKEN = process.env.DROPBOX_ACCESS_TOKEN;
 
-const auth = new google.auth.GoogleAuth({
-  keyFile: serviceAccountKeyPath,
-  scopes: [
-    "https://www.googleapis.com/auth/youtube.upload",
-    "https://www.googleapis.com/auth/adwords",
-  ],
-});
+const dbx = new Dropbox({ accessToken: DROPBOX_ACCESS_TOKEN, fetch: fetch });
+async function uploadVideoToDropbox(videoFile) {
+  const uniqueName = `${uuidv4()}${path.extname(videoFile.name)}`;
+  const dropboxPath = `/uploads/${uniqueName}`;
 
+  try {
+    const buffer = Buffer.from(await videoFile.arrayBuffer());
+    await dbx.filesUpload({
+      path: dropboxPath,
+      contents: buffer,
+    });
+    console.log(`File uploaded to Dropbox: ${dropboxPath}`);
+    return dropboxPath;
+  } catch (error) {
+    console.error("Error uploading to Dropbox:", error);
+    throw new Error("Failed to upload video to Dropbox.");
+  }
+}
+async function downloadVideoFromDropbox(dropboxUrl) {
+  try {
+    const response = await fetch(dropboxUrl);
+    if (!response.ok) {
+      throw new Error("Failed to fetch file from Dropbox.");
+    }
+    const buffer = await response.buffer(); // Get file buffer
+    return buffer;
+  } catch (error) {
+    console.error("Error downloading video from Dropbox:", error);
+    throw new Error("Failed to download video from Dropbox.");
+  }
+}
+
+async function getDropboxDownloadLink(dropboxPath) {
+  try {
+    const { result } = await dbx.sharingCreateSharedLinkWithSettings({
+      path: dropboxPath,
+    });
+    return result.url.replace("?dl=0", "?dl=1"); // Direct download link
+  } catch (error) {
+    console.error("Error generating Dropbox download link:", error);
+    throw new Error("Failed to generate download link for Dropbox file.");
+  }
+}
 async function getRefreshTokenFromDatabase() {
   const token =
     "1//03glJmPG3PlYtCgYIARAAGAMSNwF-L9IrSdHStwowdCLPPx2VENSF54U-J5JfcXEzXkTe2JlDyiMyHmZVcmGwFaNtKTmFXbAPsUs";
@@ -46,9 +84,8 @@ async function getAccessTokenUsingRefreshToken(refreshToken) {
 async function uploadVideoToYouTube(videoPath, description, accessToken) {
   const oauth2Client = new google.auth.OAuth2();
   oauth2Client.setCredentials({ access_token: accessToken });
-
-  const videoFile = fs.createReadStream(videoPath);
-
+  const videoBuffer = await downloadVideoFromDropbox(videoPath);
+  const videoStream = Readable.from(videoBuffer);
   try {
     const response = await google.youtube("v3").videos.insert({
       auth: oauth2Client,
@@ -65,7 +102,7 @@ async function uploadVideoToYouTube(videoPath, description, accessToken) {
         },
       },
       media: {
-        body: videoFile,
+        body: videoStream,
       },
     });
     return response.data.id;
@@ -206,7 +243,7 @@ async function createGoogleAdsCampaign(
     throw new Error("Failed to create Google Ads campaign.");
   }
 }
-
+export const runtime = "nodejs";
 export async function POST(req) {
   const formData = await req.formData();
   const targetZip = formData.get("targetZip");
@@ -234,15 +271,14 @@ export async function POST(req) {
     );
   }
 
-  const videoPath = `uploads/${uuidv4()}${path.extname(videoFile.name)}`;
   try {
-    const buffer = Buffer.from(await videoFile.arrayBuffer());
-    await fs.promises.writeFile(videoPath, buffer);
+    const dropboxPath = await uploadVideoToDropbox(videoFile);
+    const videoUrl = await getDropboxDownloadLink(dropboxPath);
 
     const accessToken = await getRefreshTokenFromDatabase();
 
     const videoId = await uploadVideoToYouTube(
-      videoPath,
+      videoUrl,
       description,
       accessToken
     );
@@ -261,8 +297,6 @@ export async function POST(req) {
       duration,
       accessToken
     );
-
-    await fs.promises.unlink(videoPath);
 
     return NextResponse.json(
       {

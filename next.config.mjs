@@ -3,6 +3,10 @@
 const nextConfig = {
   experimental: {
     ppr: "incremental",
+    runtime: "nodejs",
+  },
+  middleware: {
+    ignoredRoutes: ["/favicon.ico", "/_next/*"],
   },
   images: {
     domains: ["images.unsplash.com"],
