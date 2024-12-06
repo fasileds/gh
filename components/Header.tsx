@@ -68,7 +68,7 @@ function Header() {
         onMouseLeave={() => setIsVibrating(false)}
       >
         <div className="text-2xl font-bold text-black flex flex-col leading-tight">
-          <span className="text-green-600">Dinar</span>
+          <span className="text-green-600">Dinner</span>
           <span className="text-green-600">Bell</span>
         </div>
         <div className="flex justify-center items-center w-20 h-15 group">

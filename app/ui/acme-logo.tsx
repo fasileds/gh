@@ -14,7 +14,7 @@ export default function AcmeLogo() {
     <div
       className={`${lusitana.className} flex flex-row items-center leading-none text-white`}
     >
-      <p className="text-[30px]">Dinare Bell</p>
+      <p className="text-[30px]">Dinner Bell</p>
       <div className="flex justify-center items-center w-20 h-15 group">
         <div className="text-5xl transform origin-top transition-transform duration-200 group-hover:animate-[ring_1s_ease-in-out_infinite]">
           <img
