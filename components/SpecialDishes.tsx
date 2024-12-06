@@ -29,6 +29,7 @@ function SpecialDishes({ id }: MainProps) {
         setLoading(true);
         const res = await axios.get<Video>(`/api/Video/getSingleVideo/${id}`);
         setSingleVideoData(res.data);
+        console.log("the response part is here", res.data);
       } catch (error) {
         console.error("Error fetching single video:", error);
       } finally {

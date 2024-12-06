@@ -105,6 +105,7 @@ async function uploadVideoToYouTube(videoPath, description, accessToken) {
         body: videoStream,
       },
     });
+    console.log("video uploded yo youtube sussfully :", response.data);
     return response.data.id;
   } catch (error) {
     console.error("Error uploading video to YouTube:", error);
@@ -144,6 +145,7 @@ async function uploadVideoToGoogleAds(videoId, accessToken) {
     }
 
     const responseData = await response.json();
+    console.log("the video uploded sussfuly: ", responseData);
     return responseData.results[0].resourceName;
   } catch (error) {
     console.error("Network error during video upload to Google Ads:", error);
@@ -189,6 +191,7 @@ async function createGoogleAdsCampaign(
     }
 
     const budgetData = await budgetResponse.json();
+    console.log("buget created sussfully : ", budgetData);
     const budgetId = budgetData.results[0].resourceName.split("/").pop();
 
     // Step 2: Create Campaign
@@ -234,10 +237,83 @@ async function createGoogleAdsCampaign(
       JSON.stringify(campaignData, null, 2)
     );
     const campaignId = campaignData.results[0].resourceName.split("/").pop();
+    const adGroupResponse = await fetch(
+      `${API_URL}/${process.env.GOOGLE_ADS_ACCOUNT_ID}/adGroups:mutate`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "developer-token": process.env.GOOGLE_ADS_DEVELOPER_TOKEN,
+        },
+        body: JSON.stringify({
+          operations: [
+            {
+              create: {
+                name: `Ad Group ${uuidv4()}`,
+                campaign: `customers/${process.env.GOOGLE_ADS_ACCOUNT_ID}/campaigns/${campaignId}`,
+                status: "ENABLED",
+                cpcBidMicros: 1000000, // Example bid, adjust as needed
+              },
+            },
+          ],
+        }),
+      }
+    );
+
+    if (!adGroupResponse.ok) {
+      console.error(
+        `Error: ${adGroupResponse.status} - ${adGroupResponse.statusText}`
+      );
+      throw new Error("Failed to create ad group.");
+    }
+
+    const adGroupData = await adGroupResponse.json();
+    const adGroupId = adGroupData.results[0].resourceName.split("/").pop();
+    console.log("Ad Group created successfully:", adGroupData);
 
     const assetResource = await uploadVideoToGoogleAds(videoId, accessToken);
+    const adGroupAdResponse = await fetch(
+      `${API_URL}/${process.env.GOOGLE_ADS_ACCOUNT_ID}/adGroupAds:mutate`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "developer-token": process.env.GOOGLE_ADS_DEVELOPER_TOKEN,
+        },
+        body: JSON.stringify({
+          operations: [
+            {
+              create: {
+                adGroup: `customers/${process.env.GOOGLE_ADS_ACCOUNT_ID}/adGroups/${adGroupId}`,
+                status: "ENABLED",
+                ad: {
+                  videoAd: {
+                    video: assetResource,
+                  },
+                },
+              },
+            },
+          ],
+        }),
+      }
+    );
 
-    return { campaignId, assetResource };
+    if (!adGroupAdResponse.ok) {
+      const errorDetail = await adGroupAdResponse.json();
+      console.error("Google Ads API Ad Group Ad error details:", errorDetail);
+      throw new Error(errorDetail.error.message || "Unknown error");
+    }
+
+    const responseData = await adGroupAdResponse.json();
+    console.log("Ad Group Ad created successfully:", responseData);
+
+    return {
+      campaignId,
+      adGroupId: adGroupData.results[0].resourceName.split("/").pop(),
+      assetResource,
+    };
   } catch (error) {
     console.error("Error creating Google Ads campaign:", error);
     throw new Error("Failed to create Google Ads campaign.");

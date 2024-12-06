@@ -71,9 +71,13 @@ function Header() {
           <span className="text-green-600">Dinar</span>
           <span className="text-green-600">Bell</span>
         </div>
-        <div className="flex justify-center items-center w-24 h-17">
-          <div className="text-5xl transform origin-top animate-[ring_1s_ease-in-out_infinite]">
-            🔔
+        <div className="flex justify-center items-center w-20 h-15 group">
+          <div className="text-5xl transform origin-top transition-transform duration-200 group-hover:animate-[ring_1s_ease-in-out_infinite]">
+            <img
+              className="h-16 w-16 object-contain cursor-pointer group-hover:scale-110"
+              src="/bell1.png"
+              alt="Notification Bell"
+            />
           </div>
         </div>
       </a>
