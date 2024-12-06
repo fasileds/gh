@@ -1,3 +1,4 @@
+"use client";
 import { lusitana } from "@/app/ui/fonts";
 
 export default function AcmeLogo() {
