@@ -116,7 +116,7 @@ function SpecialDish({
     }
   };
 
-  const embedUrl = videoUrl.replace("watch?v=", "embed/");
+  const embedUrl = `https://www.youtube.com/embed/${videoUrl}`;
 
   return (
     <div className="flex flex-col lg:flex-row items-center justify-between gap-6 p-6 bg-white shadow-lg rounded-lg transition-transform duration-300 hover:scale-105 hover:shadow-xl">

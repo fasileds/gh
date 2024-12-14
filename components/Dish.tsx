@@ -24,7 +24,7 @@ function Dish({
 }: DishProps) {
   const [isModalOpen, setModalOpen] = useState(false);
 
-  const embedUrl = videoUrl.replace("watch?v=", "embed/");
+  const embedUrl = `https://www.youtube.com/embed/${videoUrl}`;
 
   const handleProceedToPayment = () => {
     setModalOpen(true);

@@ -49,7 +49,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           </Dialog.Title>
 
           <Elements stripe={stripePromise}>
-            <CheckoutForm budget={buget} />
+            <CheckoutForm budget={buget * 100} />
           </Elements>
         </Dialog.Panel>
       </div>
