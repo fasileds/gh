@@ -1,54 +1,136 @@
+"use client";
 import AcmeLogo from "@/app/ui/acme-logo";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { lusitana } from "@/app/ui/fonts";
 import Image from "next/image";
+import Slider from "react-slick";
+
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 export default function Page() {
-  return (
-    <main className="flex min-h-screen flex-col p-6 bg-gray-50">
-      {/* Header with Logo */}
-      <div className="flex h-20 shrink-0 items-end rounded-lg bg-green-500 p-4 md:h-52 shadow-xl">
-        <AcmeLogo />
-      </div>
+  const playSound = () => {
+    const audio = new Audio("/bellSound.mp3");
+    audio
+      .play()
+      .then(() => console.log("Sound played successfully!"))
+      .catch((error) => console.error("Error playing sound:", error));
+  };
+  const sliderSettings = {
+    dots: false,
+    arrows: false,
+    infinite: true,
+    speed: 800,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 1000,
+  };
 
-      {/* Main Content Area */}
-      <div className="mt-6 flex grow flex-col gap-6 md:flex-row">
-        {/* Left Column with Welcome Message */}
-        <div className="flex flex-col justify-center gap-8 rounded-lg bg-white shadow-lg p-8 md:w-2/5 md:px-10">
-          <div className="relative w-0 h-0 border-l-[15px] border-r-[15px] border-b-[26px] border-l-transparent border-r-transparent border-b-green-500 mb-4" />
-          <p
-            className={`${lusitana.className} text-xl text-gray-900 md:text-3xl md:leading-relaxed`}
+  return (
+    <main className="flex flex-col min-h-screen bg-gray-50">
+      <header className="flex flex-col h-16 md:h-48 shrink-0 justify-between rounded-b-3xl bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 px-6 md:px-16 shadow-2xl">
+        <div className="flex items-center justify-between pt-4 md:pt-8">
+          <div className="flex items-center gap-4">
+            <AcmeLogo />
+          </div>
+          <Link
+            href="/pages/signUp"
+            className="flex items-center gap-3 rounded-full bg-white px-6 py-3 text-sm font-semibold text-green-700 shadow-lg transition-all duration-300 hover:bg-green-50 hover:shadow-2xl md:px-8 md:py-4 md:text-base"
           >
-            <strong>Welcome to Acme.</strong> This is the example for the{" "}
-            <a
-              href="https://nextjs.org/learn/"
-              className="text-green-500 hover:underline"
-            >
-              Next.js Learn Course
-            </a>
-            , brought to you by Vercel.
+            <span>Create Account</span>
+            <ArrowRightIcon className="w-5 md:w-6 text-green-600" />
+          </Link>
+        </div>
+      </header>
+
+      <div className="flex grow flex-col gap-8 px-6 py-10 md:px-12 md:py-16 items-center">
+        <div className="flex flex-col justify-center items-center">
+          <div className="flex flex-col justify-center gap-8 rounded-2xl bg-white shadow-xl p-6 w-[375px] h-[700px] border border-gray-300 relative">
+            <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-24 h-2 rounded-full bg-gray-200"></div>
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-16 h-1 rounded-full bg-gray-300"></div>
+            <img
+              className="absolute top-4 left-4 h-10 w-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110 transform origin-top animate-ring"
+              src="/bell1.png"
+              alt="Notification Bell"
+            />
+            <div className="flex flex-col justify-center bg-gray-300 rounded-[1.5rem] overflow-hidden w-full h-full">
+              <Slider {...sliderSettings}>
+                {[
+                  {
+                    src: "/beef-dish-restaurant.jpg",
+                    distance: "5 km",
+                    price: "$25",
+                    restaurantName: "Awesome Restaurant",
+                    dishName: "Beef Dish",
+                  },
+                  {
+                    src: "/delicious-indian-food-tray.jpg",
+                    distance: "10 km",
+                    price: "$30",
+                    restaurantName: "Indian Spice",
+                    dishName: "Indian Platter",
+                  },
+                  {
+                    src: "/delicious-tacos-arrangement.jpg",
+                    distance: "2 km",
+                    price: "$15",
+                    restaurantName: "Taco Fiesta",
+                    dishName: "Tacos",
+                  },
+                ].map((item, index) => (
+                  <div key={index} className="relative">
+                    {/* Image */}
+                    <Image
+                      src={item.src}
+                      width={375}
+                      height={600}
+                      alt={`Dish ${index + 1}`}
+                      className="w-full h-auto object-cover rounded-lg"
+                    />
+                    <div className="absolute top-2 left-2 bg-blue-500 text-white text-sm px-2 py-1 rounded-md">
+                      Distance: {item.distance}
+                    </div>
+                    <div className="absolute top-2 right-2 bg-green-500 text-white text-sm px-2 py-1 rounded-md">
+                      Price: {item.price}
+                    </div>
+                    <div className="absolute bottom-2 left-2 bg-gray-800 text-white text-sm px-2 py-1 rounded-md">
+                      Name: {item.restaurantName}
+                    </div>
+                    <div className="absolute bottom-2 right-2 bg-gray-800 text-white text-sm px-2 py-1 rounded-md">
+                      Dish: {item.dishName}
+                    </div>
+                  </div>
+                ))}
+              </Slider>
+            </div>
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-2 bg-gray-300 rounded-full"></div>
+          </div>
+        </div>
+
+        <div className="flex flex-col justify-center items-center gap-6 rounded-2xl bg-gray-100 shadow-md p-6 w-full max-w-sm">
+          <h2 className="text-2xl font-semibold text-gray-800 text-center">
+            Dinner Bell
+          </h2>
+          <p className="text-center text-gray-600 text-base md:text-lg">
+            Dinner Bell is a web app where food trucks and small restaurants can
+            easily advertise specific dishes locally using YouTube. Explore
+            various restaurants and dishes in your area with our demo ads
+            section.
           </p>
           <Link
             href="/pages/login"
-            className="flex items-center gap-3 self-start rounded-lg bg-green-500 px-6 py-3 text-sm font-medium text-white transition duration-300 hover:bg-green-400 md:text-base"
+            className="flex items-center gap-3 rounded-lg bg-green-500 px-6 py-3 text-sm font-medium text-white transition duration-300 hover:bg-green-400 md:text-base md:px-8 md:py-4"
           >
             <span>Log in</span>
             <ArrowRightIcon className="w-5 md:w-6" />
           </Link>
         </div>
-
-        {/* Right Column with Hero Image */}
-        <div className="flex items-center justify-center p-6 md:w-3/5 md:px-20 md:py-12">
-          <Image
-            src="/hero-desktop.png"
-            width={1000}
-            height={760}
-            className="hidden md:block rounded-lg shadow-md"
-            alt="Screenshots of the dashboard project showing desktop version"
-          />
-        </div>
       </div>
+
+      <footer className="flex justify-center py-4 bg-gray-200 shadow-inner">
+        <p className="text-sm text-gray-600">Demo Ads</p>
+      </footer>
     </main>
   );
 }
