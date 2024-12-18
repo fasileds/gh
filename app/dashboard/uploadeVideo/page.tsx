@@ -126,16 +126,16 @@ export default function Page() {
           </div>
           <div className="mb-6">
             <label
-              htmlFor="restorant"
+              htmlFor="dish"
               className="block text-sm font-medium text-gray-700 mb-2 transition-colors duration-300"
             >
               Dish Name
             </label>
             <input
               type="text"
-              name="restorant"
-              id="restorant"
-              value={formData.restorant}
+              name="dish"
+              id="dish"
+              value={formData.dish}
               onChange={handleInputChange}
               placeholder="Enter the dish name"
               className="w-full px-4 py-2 border border-gray-300 focus:border-blue-500 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300"
