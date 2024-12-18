@@ -44,6 +44,7 @@ model Menu {
   orders      Order[]
   restorantId String   @default("17e4d7f2-2ae9-4e20-83ef-1a8e30786076") // Set the default value
   restorant   Restorant @relation(fields: [restorantId], references: [id])
+  dish String @default(" ")
 }
 
 

@@ -44,8 +44,8 @@ export default function Page() {
         </div>
       </header>
 
-      <div className="flex  flex-col gap-1 mt-[-120px] px-6 py-10 md:px-12 md:py-16 items-center">
-        <div className="flex flex-col justify-center mb-[-100px] items-center min-h-screen">
+      <div className="flex flex-col md:flex-row gap-6 mt-[-120px] px-6 py-10 md:px-12 md:py-16 items-center">
+        <div className="flex flex-col justify-center items-center min-h-screen md:w-2/3">
           <div className="flex flex-col justify-center gap-8 rounded-2xl bg-white shadow-xl p-6 w-[375px] sm:w-[600px] h-[700px] sm:h-[400px] border border-gray-300 relative">
             <div className="flex flex-col justify-center bg-gray-300 rounded-[1.5rem] overflow-hidden w-full h-full relative">
               <Slider {...sliderSettings}>
@@ -90,7 +90,7 @@ export default function Page() {
                         />
                       </div>
                       <div className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded-l-none rounded-r-lg -ml-[1px]">
-                        Distance : 5 km
+                        Distance : {item.distance}
                       </div>
                     </div>
                     <div className="absolute top-2 right-2 bg-green-500 text-white text-sm px-2 py-1 rounded-md z-20">
@@ -109,7 +109,7 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="flex flex-col justify-center items-center gap-6 rounded-2xl bg-gray-100 shadow-md p-6 w-full max-w-sm">
+        <div className="flex flex-col justify-center items-center gap-6 rounded-2xl bg-gray-100 shadow-md p-6 w-full max-w-sm md:w-1/3">
           <h2 className="text-2xl font-semibold text-gray-800 text-center">
             Dinner Bell
           </h2>
@@ -128,7 +128,7 @@ export default function Page() {
           </Link>
         </div>
       </div>
-      <footer className="flex justify-center py-4 bg-gray-200 shadow-inner">
+      <footer className="flex justify-center mt-[-50px] py-4 bg-gray-200 shadow-inner">
         <p className="text-sm text-gray-600">Demo Ads</p>
       </footer>
     </main>

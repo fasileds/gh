@@ -330,6 +330,7 @@ export async function POST(req) {
   const restorantId = formData.get("restorantId");
   const description = formData.get("description");
   const userId = formData.get("userId");
+  const dish = formData.get("dish");
 
   if (
     !targetZip ||
@@ -339,7 +340,8 @@ export async function POST(req) {
     isNaN(price) ||
     !description ||
     !userId ||
-    !restorantId
+    !restorantId ||
+    !dish
   ) {
     return NextResponse.json(
       { error: "Invalid input fields." },
@@ -363,7 +365,8 @@ export async function POST(req) {
       price,
       description,
       userId,
-      restorantId
+      restorantId,
+      dish
     );
     const campaignData = await createGoogleAdsCampaign(
       videoId,
@@ -396,7 +399,8 @@ async function saveToDatabase(
   price,
   description,
   userId,
-  restorantId
+  restorantId,
+  dish
 ) {
   try {
     return await prisma.menu.create({
@@ -406,6 +410,7 @@ async function saveToDatabase(
         price: price,
         user: { connect: { id: userId } },
         restorant: { connect: { id: restorantId } },
+        dish: dish,
       },
     });
   } catch (error) {

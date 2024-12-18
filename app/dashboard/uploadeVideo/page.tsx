@@ -106,22 +106,41 @@ export default function Page() {
             />
           </div>
         </div>
-        <div className="mb-6">
-          <label
-            htmlFor="restorant"
-            className="block text-sm font-medium text-gray-700 mb-2 transition-colors duration-300"
-          >
-            Restaurant Name
-          </label>
-          <input
-            type="text"
-            name="restorant"
-            id="restorant"
-            value={formData.restorant}
-            onChange={handleInputChange}
-            placeholder="Enter your restaurant's name"
-            className="w-full px-4 py-2 border border-gray-300 focus:border-blue-500 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="mb-6">
+            <label
+              htmlFor="restorant"
+              className="block text-sm font-medium text-gray-700 mb-2 transition-colors duration-300"
+            >
+              Restaurant Name
+            </label>
+            <input
+              type="text"
+              name="restorant"
+              id="restorant"
+              value={formData.restorant}
+              onChange={handleInputChange}
+              placeholder="Enter your restaurant's name"
+              className="w-full px-4 py-2 border border-gray-300 focus:border-blue-500 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300"
+            />
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="restorant"
+              className="block text-sm font-medium text-gray-700 mb-2 transition-colors duration-300"
+            >
+              Dish Name
+            </label>
+            <input
+              type="text"
+              name="restorant"
+              id="restorant"
+              value={formData.restorant}
+              onChange={handleInputChange}
+              placeholder="Enter the dish name"
+              className="w-full px-4 py-2 border border-gray-300 focus:border-blue-500 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300"
+            />
+          </div>
         </div>
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700">

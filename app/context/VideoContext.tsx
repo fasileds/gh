@@ -18,6 +18,7 @@ interface FormData {
   duration: string;
   businessHours: Array<[dayjs.Dayjs | null, dayjs.Dayjs | null]>;
   restorantId: string;
+  dish: string;
 }
 
 interface VideoContextType {
@@ -56,6 +57,7 @@ export const VideoProvider = ({ children }: VideoProviderProps) => {
     country: "",
     businessHours: [[null, null]],
     restorantId: "",
+    dish: "",
   });
   const handleVideoUpload = async () => {
     if (
@@ -65,7 +67,8 @@ export const VideoProvider = ({ children }: VideoProviderProps) => {
       !formData.zipCode ||
       !formData.price ||
       !formData.description ||
-      !formData.restorantId
+      !formData.restorantId ||
+      !formData.dish
     ) {
       console.error("Missing required fields or video file.");
       return;
@@ -98,6 +101,7 @@ export const VideoProvider = ({ children }: VideoProviderProps) => {
     formDataToSend.append("description", formData.description);
     formDataToSend.append("userId", "06220b98-f8b7-4608-8db7-728afe7dbd1b");
     formDataToSend.append("restorantId", formData.restorantId);
+    formDataToSend.append("dish", formData.dish);
 
     try {
       const response = await fetch("/api/Video/createVideo", {
