@@ -85,6 +85,9 @@ async function uploadVideoToYouTube(videoPath, description, accessToken) {
   const oauth2Client = new google.auth.OAuth2();
   oauth2Client.setCredentials({ access_token: accessToken });
   const videoBuffer = await downloadVideoFromDropbox(videoPath);
+  if (Buffer.byteLength(videoBuffer) > 128 * 1024 * 1024 * 1024) {
+    throw new Error("Video exceeds the maximum allowed size.");
+  }
   const videoStream = Readable.from(videoBuffer);
   try {
     const response = await google.youtube("v3").videos.insert({

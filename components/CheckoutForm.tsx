@@ -71,14 +71,14 @@ const CheckoutForm: React.FC<PaymentModalProps> = ({ budget }) => {
         if (result.error) {
           setErrorMessage(result.error.message || "Payment failed.");
         } else if (result.paymentIntent?.status === "succeeded") {
-          handleVideoUpload();
+          await handleVideoUpload();
           Swal.fire({
             title: "Payment Successful!",
             text: "Your payment has been processed successfully.",
             icon: "success",
             confirmButtonText: "OK",
           });
-          saveRestorantInformation();
+          await saveRestorantInformation();
         }
       } else if (paymentMethod === "bank_transfer") {
         console.log("Bank transfer selected. Implement logic here.");
