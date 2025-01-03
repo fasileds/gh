@@ -1,21 +1,32 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-function Loader() {
+interface LoaderProps {
+  isLoading: boolean; // Prop to control the loader visibility
+}
+
+function Loader({ isLoading }: LoaderProps) {
+  const [fadeOut, setFadeOut] = useState(false);
+
   useEffect(() => {
-    if (document) {
-      const loaderElement = document.querySelector(".loader");
-      const intervalId = setInterval(() => {
-        if (loaderElement) {
-          loaderElement.classList.add("fade-out");
-        }
-      }, 3000);
-      return () => clearInterval(intervalId);
+    if (!isLoading) {
+      // Start fade-out transition when isLoading becomes false
+      const timeoutId = setTimeout(() => setFadeOut(true), 1000); // 1-second fade-out duration
+      return () => clearTimeout(timeoutId);
     }
-  }, []);
+  }, [isLoading]);
+
+  if (!isLoading && fadeOut) {
+    // Completely hide the loader after fade-out
+    return null;
+  }
 
   return (
-    <div className="loader fixed top-0 left-0 h-full w-full z-50 bg-white flex flex-col items-center justify-center overflow-hidden transition duration-300">
+    <div
+      className={`loader fixed top-0 left-0 h-full w-full z-50 bg-white flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000 ${
+        !isLoading ? "opacity-0" : "opacity-100"
+      }`}
+    >
       <div className="flex items-center">
         {/* Animated Bell Icon */}
         <div className="text-6xl transform origin-top animate-ring">
@@ -29,13 +40,6 @@ function Loader() {
           Loading...
         </div>
       </div>
-
-      <style jsx>{`
-        .fade-out {
-          opacity: 0;
-          transition: opacity 1s ease-out;
-        }
-      `}</style>
     </div>
   );
 }

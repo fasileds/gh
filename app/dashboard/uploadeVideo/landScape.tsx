@@ -39,24 +39,25 @@ export default function LandScape() {
       <div className="flex flex-col gap-8">
         {landscapeVideoData ? (
           <div className="relative w-[500px] h-[300px] rounded-[30px] border-4 border-gray-300 shadow-lg mb-4 p-3 bg-gray-50 transition-transform transform hover:scale-105 duration-300">
+            {/* Decorative Elements */}
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[80px] h-[20px] bg-gray-500 rounded-b-lg"></div>
             <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-[60px] h-[5px] bg-gray-400 rounded-full"></div>
             <div className="absolute top-2 right-[30px] w-[8px] h-[8px] bg-gray-400 rounded-full"></div>
+
             <div className="relative w-full h-full rounded-lg overflow-hidden">
               <video
                 className="w-full h-full rounded-lg border border-gray-200 object-cover shadow-md"
                 controls
                 src={URL.createObjectURL(landscapeVideoData)}
               />
-
-              <div className="absolute bottom-0 left-0 w-full bg-black bg-opacity-50 text-white p-4 flex flex-col items-center pointer-events-none">
-                <p className="text-xl font-semibold">
-                  Price:{" "}
-                  <span className="font-bold text-green-400">
-                    ${formData.price}
-                  </span>
-                </p>
-                <p className="text-sm mt-1">{formData.description}</p>
+              <div className="absolute top-2 right-4 bg-green-400 text-white text-sm px-3 py-1 rounded-sm shadow-md">
+                Price: ${formData.price}
+              </div>
+              <div className="absolute bottom-4 left-4 bg-gray-800 text-white text-sm px-3 py-1 rounded-sm shadow-md">
+                Restorant Name :{formData.restorant}
+              </div>
+              <div className="absolute bottom-4 right-4 bg-gray-800 text-white text-sm px-3 py-1 rounded-sm shadow-md">
+                Dish Name : {formData.dish}
               </div>
             </div>
           </div>

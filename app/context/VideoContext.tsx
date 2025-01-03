@@ -2,6 +2,7 @@
 "use client";
 import { createContext, useContext, useState, ReactNode } from "react";
 import dayjs from "dayjs";
+import { number } from "zod";
 
 interface FormData {
   price: string;
@@ -13,7 +14,7 @@ interface FormData {
   color: string;
   description: string;
   address: string;
-  searchRadius: string;
+  searchRadius: Array<number>;
   budget: string;
   duration: string;
   businessHours: Array<[dayjs.Dayjs | null, dayjs.Dayjs | null]>;
@@ -48,7 +49,7 @@ export const VideoProvider = ({ children }: VideoProviderProps) => {
     restorant: "",
     description: "",
     address: "",
-    searchRadius: "",
+    searchRadius: [],
     budget: "",
     duration: "",
     streetAddress: "",

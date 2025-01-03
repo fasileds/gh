@@ -35,40 +35,43 @@ export default async function Page() {
           <Suspense fallback={<RevenueChartSkeleton />}>
             <RevenueChart invoiceId={selectedInvoiceId} />
           </Suspense>
-          <div className="rounded-xl bg-gray-50 p-4 shadow-md">
-            <h2 className="text-lg font-semibold mb-2">
+          <div className="rounded-xl bg-white p-6 shadow-lg">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
               Conversion & Performance
             </h2>
-            <div className="bg-gradient-to-r from-blue-100 to-indigo-200 p-4 rounded-lg mb-4 shadow-sm">
-              <h3 className="text-base font-medium text-blue-900">
-                Conversion Performance
-              </h3>
-              <p className="text-gray-700 mt-2">
-                <span className="font-semibold">Per Click:</span> $0
-              </p>
-              <p className="text-gray-700">
-                <span className="font-semibold">Total Conversions:</span> 0
-              </p>
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-100 p-5 rounded-xl mb-6 shadow-md">
+              <div className="space-y-2">
+                <p className="text-gray-800">
+                  <span className="font-bold text-indigo-800">
+                    Views on ad:
+                  </span>{" "}
+                  0
+                </p>
+                <p className="text-gray-800">
+                  <span className="font-bold text-indigo-800">
+                    Clicks on ad:
+                  </span>{" "}
+                  0
+                </p>
+                <p className="text-gray-800">
+                  <span className="font-bold text-indigo-800">
+                    Orders for pick up:
+                  </span>{" "}
+                  0
+                </p>
+                <p className="text-gray-800">
+                  <span className="font-bold text-indigo-800">
+                    Opened in Google Maps:
+                  </span>{" "}
+                  0 users
+                </p>
+              </div>
             </div>
-            <div className="bg-gradient-to-r from-green-100 to-teal-200 p-4 rounded-lg mb-4 shadow-sm">
-              <h3 className="text-base font-medium text-green-900">
-                Manual Performance
-              </h3>
-              <p className="text-gray-700 mt-2">
-                <span className="font-semibold">Reach:</span> 0 users
-              </p>
-              <p className="text-gray-700">
-                <span className="font-semibold">Impressions:</span> 0
-              </p>
-              <p className="text-gray-700">
-                <span className="font-semibold">CTR:</span> 0.0%
-              </p>
-            </div>
-            <div className="flex justify-between items-center mt-4">
-              <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-all">
+            <div className="flex justify-between items-center">
+              <button className="bg-indigo-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-indigo-700 hover:shadow-lg transition-all">
                 View Detailed Report
               </button>
-              <button className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-all">
+              <button className="bg-gray-100 text-gray-800 px-5 py-2 rounded-lg shadow-md hover:bg-gray-200 hover:shadow-lg transition-all">
                 Refresh Data
               </button>
             </div>

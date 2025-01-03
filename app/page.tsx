@@ -8,6 +8,10 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+import { signIn, useSession } from "next-auth/react";
+import { useState } from "react";
+import { FaApple, FaGoogle } from "react-icons/fa";
+
 export default function Page() {
   const playSound = () => {
     const audio = new Audio("/bellSound.mp3");
@@ -26,62 +30,72 @@ export default function Page() {
     autoplay: true,
     autoplaySpeed: 3000,
   };
+  const { data: session } = useSession();
+  const [error, setError] = useState("");
+
+  const handleSignIn = async (provider: string) => {
+    const result = await signIn(provider, {
+      callbackUrl: "http://localhost:3000",
+    });
+    if (result?.error) {
+      setError("Failed to sign in. Please try again.");
+      console.error(result.error);
+    }
+  };
 
   return (
-    <main className="flex flex-col max-h-screen bg-gray-50">
-      <header className="flex flex-col h-8 md:h-32 shrink-0 justify-between rounded-b-3xl bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 px-6 md:px-16 shadow-2xl">
-        <div className="flex items-center justify-between pt-2 md:pt-6">
-          <div className="flex items-center gap-4">
-            <AcmeLogo />
-          </div>
+    <main className="flex flex-col min-h-screen bg-gray-50">
+      <header className="relative bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 shadow-lg rounded-b-3xl">
+        <div className="flex justify-between items-center py-4 px-6 md:py-6 md:px-16">
+          <AcmeLogo />
           <a
             href="/pages/signUp"
-            className="flex cursor-pointer items-center gap-3 rounded-full bg-white px-6 py-3 text-sm font-semibold text-green-700 shadow-lg transition-all duration-300 hover:bg-green-50 hover:shadow-2xl md:px-8 md:py-4 md:text-base"
+            className="flex items-center gap-3 bg-white text-green-700 rounded-full px-6 py-3 text-sm font-medium shadow-md transition-transform transform hover:scale-105 hover:bg-green-50"
           >
             <span>Create Account</span>
-            <ArrowRightIcon className="w-5 md:w-6 text-green-600" />
+            <ArrowRightIcon className="w-5 text-green-600" />
           </a>
         </div>
       </header>
-
-      <div className="flex flex-col md:flex-row gap-6 mt-[-120px] px-6 py-10 md:px-12 md:py-16 items-center">
-        <div className="flex flex-col justify-center items-center min-h-screen md:w-2/3">
-          <div className="flex flex-col justify-center gap-8 rounded-2xl bg-white shadow-xl p-6 w-[375px] sm:w-[600px] h-[700px] sm:h-[400px] border border-gray-300 relative">
-            <div className="flex flex-col justify-center bg-gray-300 rounded-[1.5rem] overflow-hidden w-full h-full relative">
-              <Slider {...sliderSettings}>
-                {[
-                  {
-                    src: "/beef-dish-restaurant.jpg",
-                    distance: "5 km",
-                    price: "$25",
-                    restaurantName: "Awesome Restaurant",
-                    dishName: "Beef Dish",
-                  },
-                  {
-                    src: "/delicious-indian-food-tray.jpg",
-                    distance: "10 km",
-                    price: "$30",
-                    restaurantName: "Indian Spice",
-                    dishName: "Indian Platter",
-                  },
-                  {
-                    src: "/delicious-tacos-arrangement.jpg",
-                    distance: "2 km",
-                    price: "$15",
-                    restaurantName: "Taco Fiesta",
-                    dishName: "Tacos",
-                  },
-                ].map((item, index) => (
-                  <div key={index} className="relative">
-                    <Image
-                      src={item.src}
-                      width={600}
-                      height={400}
-                      alt={`Dish ${index + 1}`}
-                      className="w-full h-auto object-cover rounded-lg sm:h-[300px]"
-                    />
-                    <div className="absolute top-2 left-2 z-10 flex items-center group">
-                      <div className="flex justify-center mr-[-13px] items-center w-10 h-10 bg-blue-500 text-white rounded-full transition-all duration-300 group-hover:animate-ring group-hover:z-[-1]">
+      <div className="flex flex-col md:flex-row gap-8 mt-[-20px] px-6 py-10 md:px-12 md:py-16 items-center">
+        <div className="flex flex-col items-center md:w-2/3">
+          <div className="rounded-2xl bg-white shadow-xl p-6 w-full max-w-2xl border border-gray-200">
+            <Slider {...sliderSettings}>
+              {[
+                {
+                  src: "/beef-dish-restaurant.jpg",
+                  distance: "5 km",
+                  price: "$25",
+                  restaurantName: "Awesome Restaurant",
+                  dishName: "Beef Dish",
+                },
+                {
+                  src: "/delicious-indian-food-tray.jpg",
+                  distance: "10 km",
+                  price: "$30",
+                  restaurantName: "Indian Spice",
+                  dishName: "Indian Platter",
+                },
+                {
+                  src: "/delicious-tacos-arrangement.jpg",
+                  distance: "2 km",
+                  price: "$15",
+                  restaurantName: "Taco Fiesta",
+                  dishName: "Tacos",
+                },
+              ].map((item, index) => (
+                <div key={index} className="relative">
+                  <Image
+                    src={item.src}
+                    width={600}
+                    height={400}
+                    alt={`Dish ${index + 1}`}
+                    className="rounded-lg object-cover w-full h-72"
+                  />
+                  <div className="absolute top-4 right-4 flex items-center">
+                    <div className="flex items-center bg-green-600 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300">
+                      {/* Notification Bell */}
+                      <div className="flex justify-center items-center w-10 h-10 rounded-l-full bg-green-600">
                         <img
                           className="h-5 w-5 object-contain"
                           src="/bell1.png"
@@ -89,46 +103,65 @@ export default function Page() {
                           onMouseEnter={playSound}
                         />
                       </div>
-                      <div className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded-l-none rounded-r-lg -ml-[1px]">
-                        Distance : {item.distance}
+                      <div className="px-4 py-1 text-sm font-semibold bg-green-600 rounded-r-full">
+                        Price: {item.price}
                       </div>
                     </div>
-                    <div className="absolute top-2 right-2 bg-green-500 text-white text-sm px-2 py-1 rounded-md z-20">
-                      Price: {item.price}
-                    </div>
-                    <div className="absolute bottom-2 left-2 bg-gray-800 text-white text-sm px-2 py-1 rounded-md z-20">
-                      Restaurant Name: {item.restaurantName}
-                    </div>
-                    <div className="absolute bottom-2 right-2 bg-gray-800 text-white text-sm px-2 py-1 rounded-md z-20">
-                      Dish: {item.dishName}
-                    </div>
                   </div>
-                ))}
-              </Slider>
-            </div>
+
+                  <div className="absolute bottom-3 left-3 bg-gray-800 text-white px-3 py-1 rounded-md text-xs">
+                    Restaurant: {item.restaurantName}
+                  </div>
+                  <div className="absolute bottom-3 right-3 bg-gray-800 text-white px-3 py-1 rounded-md text-xs">
+                    Dish: {item.dishName}
+                  </div>
+                </div>
+              ))}
+            </Slider>
           </div>
         </div>
-
-        <div className="flex flex-col justify-center items-center gap-6 rounded-2xl bg-gray-100 shadow-md p-6 w-full max-w-sm md:w-1/3">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">
-            Dinner Bell
-          </h2>
-          <p className="text-center text-gray-600 text-base md:text-lg">
+        <div className="flex flex-col items-center gap-6 rounded-2xl bg-gray-100 shadow-md p-6 w-full max-w-md md:w-1/3">
+          <h2 className="text-2xl font-bold text-gray-800">Dinner Bell</h2>
+          <p className="text-center text-gray-600 text-base">
             Dinner Bell is a web app where food trucks and small restaurants can
-            easily advertise specific dishes locally using YouTube. Explore
-            various restaurants and dishes in your area with our demo ads
-            section.
+            advertise specific dishes locally using YouTube. Explore nearby
+            restaurants and dishes with our demo ads.
           </p>
-          <Link
-            href="/pages/login"
-            className="flex items-center gap-3 rounded-lg bg-green-500 px-6 py-3 text-sm font-medium text-white transition duration-300 hover:bg-green-400 md:text-base md:px-8 md:py-4"
-          >
-            <span>Log in</span>
-            <ArrowRightIcon className="w-5 md:w-6" />
-          </Link>
         </div>
       </div>
-      <footer className="flex justify-center mt-[-50px] py-4 bg-gray-200 shadow-inner">
+      <div className="flex justify-center items-center mt-[-50px] px-6 py-10">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+          {session ? (
+            <div className="text-center text-lg text-green-500 font-semibold">
+              You are logged in!
+            </div>
+          ) : (
+            <>
+              <h2 className="text-2xl font-bold text-indigo-900 text-center mb-4">
+                Sign In Now
+              </h2>
+              {error && (
+                <div className="text-red-500 text-center mb-4">{error}</div>
+              )}
+              <div className="flex flex-col gap-4">
+                <button
+                  onClick={() => handleSignIn("google")}
+                  className="flex items-center justify-center w-full bg-red-500 text-white py-3 rounded-lg transition-transform transform hover:scale-105"
+                >
+                  <FaGoogle className="mr-2" /> Google
+                </button>
+                <button
+                  onClick={() => handleSignIn("apple")}
+                  className="flex items-center justify-center w-full bg-black text-white py-3 rounded-lg transition-transform transform hover:scale-105"
+                >
+                  <FaApple className="mr-2" /> Apple
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      <footer className="bg-gray-200 py-4 shadow-inner flex justify-center">
         <p className="text-sm text-gray-600">Demo Ads</p>
       </footer>
     </main>

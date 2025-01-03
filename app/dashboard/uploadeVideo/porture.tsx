@@ -40,22 +40,21 @@ export default function Porture() {
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[80px] h-[20px] bg-gray-700 rounded-b-lg"></div>
             <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-[60px] h-[5px] bg-gray-600 rounded-full"></div>
             <div className="absolute top-2 right-[30px] w-[8px] h-[8px] bg-gray-600 rounded-full"></div>
-
-            <video
-              className="w-full h-[300px] rounded-lg border border-gray-300 object-cover shadow-md transition-transform duration-300 hover:scale-105"
-              controls
-              src={pvideoFile}
-            />
-            <div className="flex flex-col items-center text-center mt-2 bg-gray-100 rounded-lg p-3 shadow-md transition-transform duration-300 hover:scale-105 w-full">
-              <p className="text-lg font-semibold text-gray-800">
-                Price:{" "}
-                <span className="font-bold text-green-600">
-                  ${formData.price}
-                </span>
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                {formData.description}
-              </p>
+            <div className="relative w-full h-[300px]">
+              <video
+                className="w-full h-full rounded-lg border border-gray-300 object-cover shadow-md transition-transform duration-300 hover:scale-105"
+                controls
+                src={pvideoFile}
+              />
+              <div className="absolute top-2 left-2 bg-green-400 text-white text-xs px-2 py-1 rounded-sm shadow-md">
+                Price: ${formData.price}
+              </div>
+              <div className="absolute top-2 right-2 bg-gray-900 text-white text-xs px-2 py-1 rounded-sm shadow-md">
+                Dish Name: {formData.dish}
+              </div>
+              <div className="absolute bottom-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded-sm shadow-md">
+                Restaurant Name: {formData.restorant}
+              </div>
             </div>
           </div>
         ) : (

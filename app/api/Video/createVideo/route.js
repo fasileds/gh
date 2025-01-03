@@ -8,57 +8,14 @@ import os from "os";
 import { Dropbox } from "dropbox";
 import { Readable } from "stream";
 import fetch from "node-fetch";
+import { error } from "console";
 const prisma = new PrismaClient();
 const API_URL = "https://googleads.googleapis.com/v18/customers";
 const DEVELOPER_TOKEN = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
 const GOOGLE_ADS_ACCOUNT_ID = process.env.GOOGLE_ADS_ACCOUNT_ID;
 
 // Google Auth for service account
-const DROPBOX_ACCESS_TOKEN = process.env.DROPBOX_ACCESS_TOKEN;
 
-const dbx = new Dropbox({ accessToken: DROPBOX_ACCESS_TOKEN, fetch: fetch });
-async function uploadVideoToDropbox(videoFile) {
-  const uniqueName = `${uuidv4()}${path.extname(videoFile.name)}`;
-  const dropboxPath = `/uploads/${uniqueName}`;
-
-  try {
-    const buffer = Buffer.from(await videoFile.arrayBuffer());
-    await dbx.filesUpload({
-      path: dropboxPath,
-      contents: buffer,
-    });
-    console.log(`File uploaded to Dropbox: ${dropboxPath}`);
-    return dropboxPath;
-  } catch (error) {
-    console.error("Error uploading to Dropbox:", error);
-    throw new Error("Failed to upload video to Dropbox.");
-  }
-}
-async function downloadVideoFromDropbox(dropboxUrl) {
-  try {
-    const response = await fetch(dropboxUrl);
-    if (!response.ok) {
-      throw new Error("Failed to fetch file from Dropbox.");
-    }
-    const buffer = await response.buffer(); // Get file buffer
-    return buffer;
-  } catch (error) {
-    console.error("Error downloading video from Dropbox:", error);
-    throw new Error("Failed to download video from Dropbox.");
-  }
-}
-
-async function getDropboxDownloadLink(dropboxPath) {
-  try {
-    const { result } = await dbx.sharingCreateSharedLinkWithSettings({
-      path: dropboxPath,
-    });
-    return result.url.replace("?dl=0", "?dl=1"); // Direct download link
-  } catch (error) {
-    console.error("Error generating Dropbox download link:", error);
-    throw new Error("Failed to generate download link for Dropbox file.");
-  }
-}
 async function getRefreshTokenFromDatabase() {
   const token =
     "1//03glJmPG3PlYtCgYIARAAGAMSNwF-L9IrSdHStwowdCLPPx2VENSF54U-J5JfcXEzXkTe2JlDyiMyHmZVcmGwFaNtKTmFXbAPsUs";
@@ -81,14 +38,12 @@ async function getAccessTokenUsingRefreshToken(refreshToken) {
   return token;
 }
 
-async function uploadVideoToYouTube(videoPath, description, accessToken) {
+async function uploadVideoToYouTube(videoFile, description, accessToken) {
   const oauth2Client = new google.auth.OAuth2();
   oauth2Client.setCredentials({ access_token: accessToken });
-  const videoBuffer = await downloadVideoFromDropbox(videoPath);
-  if (Buffer.byteLength(videoBuffer) > 128 * 1024 * 1024 * 1024) {
-    throw new Error("Video exceeds the maximum allowed size.");
-  }
-  const videoStream = Readable.from(videoBuffer);
+
+  const videoStream = Readable.from(Buffer.from(await videoFile.arrayBuffer()));
+
   try {
     const response = await google.youtube("v3").videos.insert({
       auth: oauth2Client,
@@ -98,17 +53,18 @@ async function uploadVideoToYouTube(videoPath, description, accessToken) {
           title: "Your Video Title",
           description: description,
           tags: ["tag1", "tag2"],
-          categoryId: "22",
+          categoryId: "22", // Adjust category ID as needed
         },
         status: {
-          privacyStatus: "public",
+          privacyStatus: "public", // Can be "public", "unlisted", or "private"
         },
       },
       media: {
         body: videoStream,
       },
     });
-    console.log("video uploded yo youtube sussfully :", response.data);
+
+    console.log("Video uploaded to YouTube successfully:", response.data);
     return response.data.id;
   } catch (error) {
     console.error("Error uploading video to YouTube:", error);
@@ -162,8 +118,13 @@ async function createGoogleAdsCampaign(
   budget,
   description,
   duration,
-  accessToken
+  accessToken,
+  restorantId,
+  dish,
+  saavedVideoId,
+  price
 ) {
+  console.log("the accses token is here:", accessToken);
   try {
     // Step 1: Create Campaign Budget
     const budgetResponse = await fetch(
@@ -189,15 +150,26 @@ async function createGoogleAdsCampaign(
         }),
       }
     );
+
     if (!budgetResponse.ok) {
-      throw new Error("Failed to create campaign budget.");
+      // Capture additional error details
+      const errorDetails = await budgetResponse.text(); // Get full error response body
+      console.error("Failed to create campaign budget.");
+      console.error("Status Code:", budgetResponse.status);
+      console.error("Status Text:", budgetResponse.statusText);
+      console.error("Response Body:", errorDetails);
+
+      throw new Error(
+        `Failed to create campaign budget. 
+        Status Code: ${budgetResponse.status}, 
+        Status Text: ${budgetResponse.statusText}, 
+        Response Body: ${errorDetails}`
+      );
     }
 
     const budgetData = await budgetResponse.json();
     console.log("buget created sussfully : ", budgetData);
     const budgetId = budgetData.results[0].resourceName.split("/").pop();
-
-    // Step 2: Create Campaign
     const campaignResponse = await fetch(
       `${API_URL}/${process.env.GOOGLE_ADS_ACCOUNT_ID}/campaigns:mutate`,
       {
@@ -224,16 +196,11 @@ async function createGoogleAdsCampaign(
     );
 
     if (!campaignResponse.ok) {
-      // Log status and status text
       console.error(
         `Error: ${campaignResponse.status} - ${campaignResponse.statusText}`
       );
-
-      // Attempt to parse and log the JSON error message
       throw new Error("Failed to create campaign.");
     }
-
-    // If successful, log the success message or response data
     const campaignData = await campaignResponse.json();
     console.log(
       "Campaign created successfully:",
@@ -256,7 +223,7 @@ async function createGoogleAdsCampaign(
                 name: `Ad Group ${uuidv4()}`,
                 campaign: `customers/${process.env.GOOGLE_ADS_ACCOUNT_ID}/campaigns/${campaignId}`,
                 status: "ENABLED",
-                cpcBidMicros: 1000000, // Example bid, adjust as needed
+                cpcBidMicros: 1000000,
               },
             },
           ],
@@ -276,6 +243,9 @@ async function createGoogleAdsCampaign(
     console.log("Ad Group created successfully:", adGroupData);
 
     const assetResource = await uploadVideoToGoogleAds(videoId, accessToken);
+    const assetId = assetResource.split("/").pop(); // Extracts the last part
+    console.log(assetId); // Outputs: 191518173756
+    console.log("assetResourse: ", assetResource);
     const adGroupAdResponse = await fetch(
       `${API_URL}/${process.env.GOOGLE_ADS_ACCOUNT_ID}/adGroupAds:mutate`,
       {
@@ -289,13 +259,43 @@ async function createGoogleAdsCampaign(
           operations: [
             {
               create: {
-                adGroup: `customers/${process.env.GOOGLE_ADS_ACCOUNT_ID}/adGroups/${adGroupId}`,
-                status: "ENABLED",
                 ad: {
-                  videoAd: {
-                    video: assetResource,
+                  demandGenVideoResponsiveAd: {
+                    businessName: {
+                      text: "Dinner Bell",
+                    },
+                    descriptions: [
+                      {
+                        text: `${description}`,
+                      },
+                    ],
+                    headlines: [
+                      {
+                        text: `${price}`,
+                      },
+                    ],
+                    longHeadlines: [
+                      {
+                        text: `${restorantId}`,
+                      },
+                    ],
+                    logoImages: [
+                      {
+                        asset: "customers/5135893348/assets/191261938048",
+                      },
+                    ],
+                    videos: [
+                      {
+                        asset: `customers/5135893348/assets/${assetId}`,
+                      },
+                    ],
                   },
+                  finalUrls: [
+                    `https://dinner-bell-ads.com/pages/lendingPage/${saavedVideoId}`,
+                  ],
+                  name: `${dish}`,
                 },
+                adGroup: `customers/5135893348/adGroups/${adGroupId}`,
               },
             },
           ],
@@ -304,13 +304,39 @@ async function createGoogleAdsCampaign(
     );
 
     if (!adGroupAdResponse.ok) {
-      const errorDetail = await adGroupAdResponse.json();
-      console.error("Google Ads API Ad Group Ad error details:", errorDetail);
-      throw new Error(errorDetail.error.message || "Unknown error");
+      // Extracting detailed error information
+      try {
+        const errorDetail = await adGroupAdResponse.json();
+        console.error("Google Ads API Ad Group Ad Error Details:");
+        console.error("Status Code:", adGroupAdResponse.status);
+        console.error("Status Text:", adGroupAdResponse.statusText);
+        console.error(
+          "Headers:",
+          JSON.stringify([...adGroupAdResponse.headers])
+        );
+        console.error("Error Body:", JSON.stringify(errorDetail, null, 2));
+
+        throw new Error(
+          errorDetail.error.message ||
+            "Unknown error occurred while creating Ad Group Ad."
+        );
+      } catch (error) {
+        console.error("Failed to parse error details from response.");
+        console.error("Status Code:", adGroupAdResponse.status);
+        console.error("Status Text:", adGroupAdResponse.statusText);
+        console.error("Raw Response Body:", await adGroupAdResponse.text());
+        throw new Error(
+          "Unknown error occurred and response could not be parsed."
+        );
+      }
     }
 
+    // Parse the successful response
     const responseData = await adGroupAdResponse.json();
-    console.log("Ad Group Ad created successfully:", responseData);
+    console.log(
+      "Ad Group Ad created successfully:",
+      JSON.stringify(responseData, null, 2)
+    );
 
     return {
       campaignId,
@@ -353,16 +379,9 @@ export async function POST(req) {
   }
 
   try {
-    const dropboxPath = await uploadVideoToDropbox(videoFile);
-    const videoUrl = await getDropboxDownloadLink(dropboxPath);
-
     const accessToken = await getRefreshTokenFromDatabase();
 
-    const videoId = await uploadVideoToYouTube(
-      videoUrl,
-      description,
-      accessToken
-    );
+    const videoId = "xjUw6_LyHT8";
     const savedVideo = await saveToDatabase(
       videoId,
       price,
@@ -371,13 +390,19 @@ export async function POST(req) {
       restorantId,
       dish
     );
+    const saavedVideoId = savedVideo.id;
+    console.log("the video saved sussfully:", savedVideo.id);
     const campaignData = await createGoogleAdsCampaign(
       videoId,
       targetZip,
       budget,
       description,
       duration,
-      accessToken
+      accessToken,
+      restorantId,
+      dish,
+      saavedVideoId,
+      price
     );
 
     return NextResponse.json(

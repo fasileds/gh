@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { lusitana } from "@/app/ui/fonts";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { CreateInvoice } from "../invoices/buttons";
 
 interface LatestInvoice {
   id: string;
@@ -51,9 +52,13 @@ export default function LatestInvoices({
 
   return (
     <div className="flex w-full flex-col md:col-span-4">
-      <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-        Latest Invoices
-      </h2>
+      <div className="flex w-[400px] items-center justify-between mb-6">
+        <h2 className={`${lusitana.className} text-xl md:text-2xl`}>
+          Latest Ads
+        </h2>
+        <CreateInvoice />
+      </div>
+
       <div className="flex grow flex-col justify-between rounded-xl bg-gray-50 p-4">
         <div className="bg-white px-6 space-y-4">
           {latestInvoices.map((invoice, i) => (

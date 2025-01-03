@@ -6,6 +6,7 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "./Loader";
 import { useSession } from "next-auth/react";
+import { generateEmailTemplate } from "@/utils/generateEmailTemplate";
 
 interface PaymentModalProps {
   budget: number;
@@ -27,6 +28,23 @@ const CheckoutForm: React.FC<PaymentModalProps> = ({ budget }) => {
   const [email, setEmail] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("card");
   const { formData } = useVideoContext();
+  const [uploading, setUploading] = useState(false); 
+
+  const sendReceiptEmail = async () => {
+    const emailContent = generateEmailTemplate({ budgett: budget });
+
+    const response = await fetch("/api/send-receipt", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        subject: "Your Receipt from Dinner Bell",
+        htmlContent: emailContent,
+      }),
+    });
+  };
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
@@ -71,14 +89,22 @@ const CheckoutForm: React.FC<PaymentModalProps> = ({ budget }) => {
         if (result.error) {
           setErrorMessage(result.error.message || "Payment failed.");
         } else if (result.paymentIntent?.status === "succeeded") {
-          await handleVideoUpload();
+          setUploading(true);
+          // await saveRestorantInformation();
+          console.log("Calling handleVideoUpload...");
+          // await handleVideoUpload();
+          console.log("handleVideoUpload completed.");
+          await sendReceiptEmail();
+          setUploading(false);
+
           Swal.fire({
             title: "Payment Successful!",
             text: "Your payment has been processed successfully.",
             icon: "success",
             confirmButtonText: "OK",
           });
-          await saveRestorantInformation();
+
+
         }
       } else if (paymentMethod === "bank_transfer") {
         console.log("Bank transfer selected. Implement logic here.");
@@ -99,7 +125,6 @@ const CheckoutForm: React.FC<PaymentModalProps> = ({ budget }) => {
   };
   const saveRestorantInformation = async () => {
     try {
-      // Make the API call to create a restaurant
       const res = await axios.post<{
         user: {
           id: string;
@@ -118,14 +143,10 @@ const CheckoutForm: React.FC<PaymentModalProps> = ({ budget }) => {
         state: formData.country,
         zipCode: formData.zipCode,
       });
-
-      // Accessing the properties from the response
       const { id, restorantName, city } = res.data.user;
       console.log("Restaurant ID:", id);
       console.log("Restaurant Name:", restorantName);
       console.log("City:", city);
-
-      // Save the restaurant ID in the formData or perform other actions
       formData.restorantId = id;
       console.log("Restaurant ID From The Part:", formData.restorantId);
     } catch (error) {
@@ -220,7 +241,7 @@ const CheckoutForm: React.FC<PaymentModalProps> = ({ budget }) => {
           loading ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-500"
         } focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200`}
       >
-        {loading ? <Loader /> : "Pay"}
+        {loading ? <Loader isLoading={loading} /> : "Pay"}
       </button>
 
       {errorMessage && (

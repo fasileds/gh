@@ -57,6 +57,35 @@ export default function Page() {
     setTimeRanges(newTimeRanges);
     setFormData((prevData) => ({ ...prevData, businessHours: newTimeRanges }));
   };
+  const handleSearchRadiusChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const updatedSearchRadius = [...formData.searchRadius];
+    const value = parseFloat(e.target.value);
+    updatedSearchRadius[index] = isNaN(value) ? 0 : value;
+    setFormData((prevData) => ({
+      ...prevData,
+      searchRadius: updatedSearchRadius,
+    }));
+  };
+
+  const addSearchRadius = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      searchRadius: [...prevData.searchRadius, 0],
+    }));
+  };
+
+  const removeSearchRadius = (index: number) => {
+    const updatedSearchRadius = formData.searchRadius.filter(
+      (_, i) => i !== index
+    );
+    setFormData((prevData) => ({
+      ...prevData,
+      searchRadius: updatedSearchRadius,
+    }));
+  };
 
   return (
     <main className="min-h-screen bg-gray-100">
@@ -93,37 +122,6 @@ export default function Page() {
               placeholder="Enter price"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Color
-            </label>
-            <input
-              type="color"
-              name="color"
-              value={formData.color}
-              onChange={handleInputChange}
-              className="mt-1 border-none w-full h-10 rounded-md cursor-pointer"
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="mb-6">
-            <label
-              htmlFor="restorant"
-              className="block text-sm font-medium text-gray-700 mb-2 transition-colors duration-300"
-            >
-              Restaurant Name
-            </label>
-            <input
-              type="text"
-              name="restorant"
-              id="restorant"
-              value={formData.restorant}
-              onChange={handleInputChange}
-              placeholder="Enter your restaurant's name"
-              className="w-full px-4 py-2 border border-gray-300 focus:border-blue-500 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300"
-            />
-          </div>
           <div className="mb-6">
             <label
               htmlFor="dish"
@@ -142,6 +140,25 @@ export default function Page() {
             />
           </div>
         </div>
+
+        <div className="mb-6">
+          <label
+            htmlFor="restorant"
+            className="block text-sm font-medium text-gray-700 mb-2 transition-colors duration-300"
+          >
+            Restaurant Name
+          </label>
+          <input
+            type="text"
+            name="restorant"
+            id="restorant"
+            value={formData.restorant}
+            onChange={handleInputChange}
+            placeholder="Enter your restaurant's name"
+            className="w-full px-4 py-2 border border-gray-300 focus:border-blue-500 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300"
+          />
+        </div>
+
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700">
             Description
@@ -212,19 +229,7 @@ export default function Page() {
                 placeholder="Enter zip code"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Search Radius
-              </label>
-              <input
-                type="text"
-                name="searchRadius"
-                value={formData.searchRadius}
-                onChange={handleInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="Enter search radius"
-              />
-            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Budget
@@ -250,6 +255,64 @@ export default function Page() {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
                 placeholder="Enter duration"
               />
+            </div>
+            <div className=" bg-white  rounded-lg">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                Zip Codes To Show Ads In
+              </h2>
+              {formData.searchRadius.map((radius, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 mb-3 p-3 bg-gray-50 border border-gray-200 rounded-lg"
+                >
+                  <input
+                    type="text"
+                    name={`searchRadius-${index}`}
+                    value={radius}
+                    onChange={(e) => handleSearchRadiusChange(e, index)}
+                    className="block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-gray-800 placeholder-gray-400"
+                    placeholder={`Enter search radius ${index + 1}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeSearchRadius(index)}
+                    className="flex items-center gap-1 px-3 py-2 bg-red-500 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 transition"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-4 h-4"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                    Remove
+                  </button>
+                </div>
+              ))}
+              <Button type="dashed" onClick={addSearchRadius} className="mt-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
+                Add Radius
+              </Button>
             </div>
           </div>
         </div>
