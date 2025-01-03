@@ -90,9 +90,9 @@ const CheckoutForm: React.FC<PaymentModalProps> = ({ budget }) => {
           setErrorMessage(result.error.message || "Payment failed.");
         } else if (result.paymentIntent?.status === "succeeded") {
           setUploading(true);
-          // await saveRestorantInformation();
+          await saveRestorantInformation();
           console.log("Calling handleVideoUpload...");
-          // await handleVideoUpload();
+          await handleVideoUpload();
           console.log("handleVideoUpload completed.");
           await sendReceiptEmail();
           setUploading(false);

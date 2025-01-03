@@ -381,7 +381,7 @@ export async function POST(req) {
   try {
     const accessToken = await getRefreshTokenFromDatabase();
 
-    const videoId = "xjUw6_LyHT8";
+    const videoId = await uploadVideoToYouTube(videoFile,description,accessToken)
     const savedVideo = await saveToDatabase(
       videoId,
       price,
