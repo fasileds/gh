@@ -99,6 +99,14 @@ export default function Page() {
           },
         ]}
       />
+      <span className="block text-lg font-bold text-gray-800 mb-2 ml-4">
+        Make an attractive video of your favorite dish that is under 24 seconds.
+        <span className="block text-gray-600 font-medium mt-1">
+          On iPhone, you can use iMovie; on Android, you can use CapCut Video
+          Editor.
+        </span>
+      </span>
+
       <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg mt-6">
         <div className="flex md:space-x-6 mb-6">
           <Porture />
@@ -111,7 +119,7 @@ export default function Page() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Price
+              Price $
             </label>
             <input
               type="number"
@@ -232,7 +240,7 @@ export default function Page() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Budget
+                Budget $
               </label>
               <input
                 type="number"
@@ -393,6 +401,20 @@ export default function Page() {
             ) : (
               <div className="text-gray-500">No time slots added yet.</div>
             )}
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="attestCheckbox"
+              className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 checked:bg-blue-600"
+            />
+            <label
+              htmlFor="attestCheckbox"
+              className="text-gray-700 text-sm font-medium"
+            >
+              I attest that the information provided is true and accurate in its
+              representation of my restaurant and its food.
+            </label>
           </div>
         </div>
 

@@ -20,16 +20,26 @@ export default async function Page() {
   );
   const { data: session } = useSession();
   console.log("the user from dashboard", session?.user);
+  const embedUrl = "https://www.youtube.com/embed/xjUw6_LyHT8";
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         Dashboard
       </h1>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <Suspense fallback={<CardsSkeleton />}>
-          <CardWrapper />
-        </Suspense>
+      <div className="flex flex-col items-center justify-center p-4 bg-gray-100 rounded-lg shadow-lg">
+        <span className="mb-4 text-lg font-semibold text-gray-700">
+          Example Ad
+        </span>
+        <iframe
+          className="w-full h-64 rounded-lg shadow-md transition-transform duration-300 transform hover:scale-105 hover:shadow-xl"
+          src={embedUrl}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
       </div>
+
       <div className="mt-6 grid  max-w-3xl  grid-cols-1 gap-6 lg:grid-cols-8">
         <div className="col-span-6 space-y-6">
           <Suspense fallback={<RevenueChartSkeleton />}>
